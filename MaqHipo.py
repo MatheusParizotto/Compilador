@@ -1,4 +1,4 @@
-caminho_arquivo = "arquivos/codigo-objeto-exemplo.txt"
+caminho_arquivo = "codigo-objeto-exemplo.txt"
 
 # Estruturas da MaqHipo
 D = []  # Pilha de dados
