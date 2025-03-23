@@ -12,7 +12,7 @@ TOKEN_REGEX = [
     (r'if', 'IF'),
     (r'else', 'ELSE'),
     (r'while', 'WHILE'),
-    (r'system.out.println', 'PRINTLN'),
+    (r'system\.out\.println', 'PRINTLN'),
     (r'lerDouble', 'LERDOUBLE'),
     (r'==', 'IGUAL'),
     (r'!=', 'DIFERENTE'),
@@ -35,6 +35,7 @@ TOKEN_REGEX = [
     (r',', 'VIRGULA'),
     (r'\.', 'PONTO'),
     (r'[0-9]+\.[0-9]+', 'NUMERO_REAL'),
+    (r'[0-9]+', 'NUMERO_INTEIRO'),
     (r'[a-zA-Z_][a-zA-Z0-9_]*', 'ID'),
     (r'//.*', 'COMENTARIO')
 ]
@@ -44,28 +45,33 @@ def tokenizer(codigo_fonte):
     Função que recebe um código MiniJava e retorna uma lista de tokens.
     """
     tokens = []
-    while codigo_fonte:
-        codigo_fonte = codigo_fonte.lstrip()  # Remove espaços e quebras de linha no início
+    codigo_fonte = codigo_fonte.strip()  # Remove espaços extras no começo e fim
 
-        token_encontrado = None
+    while codigo_fonte:
+        codigo_fonte = codigo_fonte.lstrip()  # Remove espaços no início
+
+        token_encontrado = False
         for pattern, tipo in TOKEN_REGEX:
             regex = re.match(pattern, codigo_fonte)
             if regex:
                 valor = regex.group(0)
                 if tipo != 'COMENTARIO':  # Ignorar comentários
                     tokens.append((tipo, valor))
-                codigo_fonte = codigo_fonte[len(valor):]  # Remove o token do código fonte
+                codigo_fonte = codigo_fonte[len(valor):]  # Remove o token do código-fonte
                 token_encontrado = True
                 break
 
         if not token_encontrado:
-            raise SyntaxError(f"Erro Léxico: Token inválido encontrado: {codigo_fonte.split()[0]}")
+            if codigo_fonte.strip():  # Apenas lança erro se houver caracteres não reconhecidos
+                raise SyntaxError(f"Erro Léxico: Token inválido encontrado: {codigo_fonte[:10]}")
+            else:
+                break  # Evita erro de lista vazia e encerra a análise
 
     return tokens
 
 # Testando o léxico com o código MiniJava fornecido
 with open("mini-java-examplo.java", "r", encoding="utf-8") as f:
-    codigo = f.read()
+    codigo = f.read().strip()  # Remove espaços e quebras de linha extras
 
 tokens = tokenizer(codigo)
 for token in tokens:
