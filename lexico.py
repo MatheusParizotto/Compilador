@@ -41,37 +41,55 @@ TOKEN_REGEX = [
 ]
 
 def tokenizer(codigo_fonte):
-    """
-    Função que recebe um código MiniJava e retorna uma lista de tokens.
-    """
+   
+    # Função que recebe um código MiniJava e retorna uma lista de tokens.
+    
     tokens = []
-    codigo_fonte = codigo_fonte.strip()  # Remove espaços extras no começo e fim
+    # Remove espaços extras no começo e fim
+    codigo_fonte = codigo_fonte.strip()  
+    # Divide em linhas para melhor depuração
+    linhas = codigo_fonte.split("\n")  
 
     while codigo_fonte:
-        codigo_fonte = codigo_fonte.lstrip()  # Remove espaços no início
+        # Remove espaços no início
+        codigo_fonte = codigo_fonte.lstrip()  
 
         token_encontrado = False
         for pattern, tipo in TOKEN_REGEX:
             regex = re.match(pattern, codigo_fonte)
             if regex:
                 valor = regex.group(0)
-                if tipo != 'COMENTARIO':  # Ignorar comentários
+
+                # Erro para números mal formatados 
+                if tipo == 'NUMERO_REAL' and valor.count('.') > 1:
+                    raise SyntaxError(f"Erro Léxico: Número mal formatado '{valor}'")
+
+                # Ignora os comentários
+                if tipo != 'COMENTARIO': 
                     tokens.append((tipo, valor))
-                codigo_fonte = codigo_fonte[len(valor):]  # Remove o token do código-fonte
+
+                # Remove o token do código-fonte
+                codigo_fonte = codigo_fonte[len(valor):]  
                 token_encontrado = True
                 break
 
         if not token_encontrado:
-            if codigo_fonte.strip():  # Apenas lança erro se houver caracteres não reconhecidos
-                raise SyntaxError(f"Erro Léxico: Token inválido encontrado: {codigo_fonte[:10]}")
+            # Exibir linha onde ocorreu o erro léxico
+            for linha in linhas:
+                if codigo_fonte.strip() and codigo_fonte.strip() in linha:
+                    linha_do_erro = linha.strip()
+                    break
             else:
-                break  # Evita erro de lista vazia e encerra a análise
+                linha_do_erro = f"(Trecho inválido: {codigo_fonte[:15]})"
+
+            raise SyntaxError(f"Erro Léxico: Token inválido encontrado na linha -> {linha_do_erro}")
 
     return tokens
 
 # Testando o léxico com o código MiniJava fornecido
-with open("mini-java.java", "r", encoding="utf-8") as f:
-    codigo = f.read().strip()  # Remove espaços e quebras de linha extras
+with open("mini-java-teste.java", "r", encoding="utf-8") as f:
+    # Remove espaços e quebras de linha extras
+    codigo = f.read().strip()  
 
 tokens = tokenizer(codigo)
 for token in tokens:

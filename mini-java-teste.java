@@ -1,13 +1,7 @@
-public class Teste {
+public class ErroLexico {
     public static void main(String[] args) {
-        double x, y;
-        x = lerDouble();
-        y = lerDouble();
-
-        if (x > y) {
-            System.out.println(x);
-        } else {
-            System.out.println(y);
-        }
+        double num = 10.5.3; // Erro: número com dois pontos decimais
+        @invalido = 5;       // Erro: caractere inválido '@'
+        System.out.println("Teste);
     }
 }
