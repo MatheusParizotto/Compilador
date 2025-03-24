@@ -70,7 +70,7 @@ def tokenizer(codigo_fonte):
     return tokens
 
 # Testando o léxico com o código MiniJava fornecido
-with open("mini-java-examplo.java", "r", encoding="utf-8") as f:
+with open("mini-java.java", "r", encoding="utf-8") as f:
     codigo = f.read().strip()  # Remove espaços e quebras de linha extras
 
 tokens = tokenizer(codigo)
