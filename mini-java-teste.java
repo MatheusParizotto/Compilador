@@ -1,7 +1,13 @@
-public class ErroLexico {
+class LoopTeste {
     public static void main(String[] args) {
-        double num = 10.5.3; // Erro: número com dois pontos decimais
-        @invalido = 5;       // Erro: caractere inválido '@'
-        System.out.println("Teste);
+        int i = 0;
+        while (i < 5) {
+            if (i % 2 == 0) {
+                System.out.println("Par");
+            } else {
+                System.out.println("Ímpar");
+            }
+            i = i + 1;
+        }
     }
 }

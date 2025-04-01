@@ -74,7 +74,7 @@ def tokenizer(codigo_fonte):
                 break
 
         if not token_encontrado:
-            # Exibir linha onde ocorreu o erro léxico
+            # Mostrar a linha do erro
             for linha in linhas:
                 if codigo_fonte.strip() and codigo_fonte.strip() in linha:
                     linha_do_erro = linha.strip()
@@ -86,7 +86,7 @@ def tokenizer(codigo_fonte):
 
     return tokens
 
-# Testando o léxico com o código MiniJava fornecido
+# Testando o léxico com o mini java
 with open("mini-java-teste.java", "r", encoding="utf-8") as f:
     # Remove espaços e quebras de linha extras
     codigo = f.read().strip()  
