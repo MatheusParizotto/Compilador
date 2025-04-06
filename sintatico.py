@@ -54,3 +54,19 @@ class AnalisadorSintatico:
             self.parte_falsa()
         else:
             raise SyntaxError(f"Esperado 'if', mas encontrado: {self.token_atual}")
+    
+    def parte_falsa(self):
+        if self.token_atual[0] == 'ELSE':
+            self.consome('ELSE')
+            self.consome('ABRE_CHAVE')
+            self.comandos()
+            self.consome('FECHA_CHAVE')
+        # Se não tiver else é vazio, então não faz nada
+
+    def condicao(self):
+        self.expressao()
+        if self.token_atual[0] in ['IGUAL', 'DIFERENTE', 'MAIOR_IGUAL', 'MENOR_IGUAL', 'MAIOR', 'MENOR']:
+            self.consome(self.token_atual[0])
+        else:
+            raise SyntaxError(f"Operador relacional esperado, mas encontrado: {self.token_atual}")
+        self.expressao()
