@@ -41,3 +41,16 @@ class AnalisadorSintatico:
 
     def comandos(self):
         pass
+
+    def comando_condicional(self):
+        if self.token_atual[0] == 'IF':
+            self.consome('IF')
+            self.consome('PARENTESE_ESQ')
+            self.condicao()
+            self.consome('PARENTESE_DIR')
+            self.consome('ABRE_CHAVE')
+            self.comandos()
+            self.consome('FECHA_CHAVE')
+            self.parte_falsa()
+        else:
+            raise SyntaxError(f"Esperado 'if', mas encontrado: {self.token_atual}")
