@@ -70,3 +70,38 @@ class AnalisadorSintatico:
         else:
             raise SyntaxError(f"Operador relacional esperado, mas encontrado: {self.token_atual}")
         self.expressao()
+
+    def comandos(self):
+        token = self.token_atual()
+        if token is None or token[0] == 'FECHA_CHAVE':
+            return  # Comando vazio 
+
+        if token[0] == 'IF' or token[0] == 'WHILE':
+            self.comando_condicional()
+            self.comandos()
+        elif token[0] == 'ID' or token[0] == 'SYSTEM':
+            self.comando()
+            self.consumir('PONTO_VIRGULA')
+            self.comandos()
+        elif token[0] == 'TIPO':  # Caso precise tratar declarações
+            self.dc()
+            self.comandos()
+        else:
+            raise SyntaxError(f"Comando inválido iniciado por: {token}")
+
+    def comando(self):
+        token = self.token_atual()
+        if token[0] == 'SYSTEM':
+            self.consumir('SYSTEM')
+            self.consumir('PONTO')
+            self.consumir('OUT')
+            self.consumir('PONTO')
+            self.consumir('PRINTLN')
+            self.consumir('PARENTESE_ESQ')
+            self.expressao()
+            self.consumir('PARENTESE_DIR')
+        elif token[0] == 'ID':
+            self.consumir('ID')
+            self.resto_ident()
+        else:
+            raise SyntaxError(f"Comando inesperado: {token}")
