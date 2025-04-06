@@ -126,3 +126,21 @@ class AnalisadorSintatico:
             self.consumir('PARENTESE_DIR')
         else:
             self.expressao()
+
+    
+    def lista_arg(self):
+        token = self.token_atual()
+        if token and token[0] == 'ID':
+            self.argumentos()
+        # Caso seja vazio não vai fazer nada
+
+    def argumentos(self):
+        self.consumir('ID')
+        self.mais_ident()
+
+    def mais_ident(self):
+        token = self.token_atual()
+        if token and token[0] == 'VIRGULA':
+            self.consumir('VIRGULA')
+            self.argumentos()
+        # Se for vazio não faz nada
