@@ -105,3 +105,24 @@ class AnalisadorSintatico:
             self.resto_ident()
         else:
             raise SyntaxError(f"Comando inesperado: {token}")
+    
+    def resto_ident(self):
+        token = self.token_atual()
+        if token[0] == 'IGUAL':
+            self.consumir('IGUAL')
+            self.exp_ident()
+        elif token[0] == 'PARENTESE_ESQ':
+            self.consumir('PARENTESE_ESQ')
+            self.lista_arg()
+            self.consumir('PARENTESE_DIR')
+        else:
+            raise SyntaxError(f"Esperado '=' ou '(', encontrado: {token}")
+    
+    def exp_ident(self):
+        token = self.token_atual()
+        if token[0] == 'LERDOUBLE':
+            self.consumir('LERDOUBLE')
+            self.consumir('PARENTESE_ESQ')
+            self.consumir('PARENTESE_DIR')
+        else:
+            self.expressao()
