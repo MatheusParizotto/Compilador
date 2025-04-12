@@ -144,3 +144,13 @@ class AnalisadorSintatico:
             self.consumir('VIRGULA')
             self.argumentos()
         # Se for vazio não faz nada
+    
+    def expressao(self):
+        self.termo()
+        self.outros_termos()
+    
+    def termo(self):
+        if self.verificar('SUB'):
+            self.avancar()
+        self.fator()
+        self.mais_fatores()
