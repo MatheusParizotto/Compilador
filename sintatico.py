@@ -154,3 +154,15 @@ class AnalisadorSintatico:
             self.avancar()
         self.fator()
         self.mais_fatores()
+
+    def fator(self):
+        if self.verificar('ID'):
+            self.avancar()
+        elif self.verificar('NUMERO_REAL'):
+            self.avancar()
+        elif self.verificar('PARENTESE_ESQ'):
+            self.avancar()
+            self.expressao()
+            self.consumir('PARENTESE_DIR', "Esperado ')' ao final da expressão.")
+        else:
+            raise SyntaxError(f"Esperado identificador, número ou '(', mas encontrado: {self.token_atual()}")
