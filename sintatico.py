@@ -67,12 +67,14 @@ class AnalisadorSintatico:
 
     def comando(self):
         token = self.token_atual()
-        if token[0] == 'SYSTEM':
-            self.consumir('SYSTEM')
-            self.consumir('PONTO')
-            self.consumir('OUT')
-            self.consumir('PONTO')
-            self.consumir('PRINTLN')
+        # Verificação manual de System.out.println
+        if self.verificar('ID') and self.token_atual()[1] == 'System':
+            # Checar se vem . out . println 
+            self.consumir('ID')          
+            self.consumir('PONTO')       
+            self.consumir('ID')          
+            self.consumir('PONTO')       
+            self.consumir('ID')          
             self.consumir('PARENTESE_ESQ')
             self.expressao()
             self.consumir('PARENTESE_DIR')
