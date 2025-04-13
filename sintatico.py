@@ -166,3 +166,13 @@ class AnalisadorSintatico:
             self.consumir('PARENTESE_DIR', "Esperado ')' ao final da expressão.")
         else:
             raise SyntaxError(f"Esperado identificador, número ou '(', mas encontrado: {self.token_atual()}")
+    
+    def outros_termos(self):
+        while self.verificar('SOMA') or self.verificar('SUB'):
+            self.avancar()
+            self.termo()
+
+    def mais_fatores(self):
+        while self.verificar('MULT') or self.verificar('DIV'):
+            self.avancar()
+            self.fator()
