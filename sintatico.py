@@ -176,3 +176,26 @@ class AnalisadorSintatico:
         while self.verificar('MULT') or self.verificar('DIV'):
             self.avancar()
             self.fator()
+
+    def declaracao_variaveis(self):
+        self.var()
+        self.mais_comandos()
+
+    def var(self):
+        self.tipo()
+        self.vars()
+
+    def tipo(self):
+        if self.verificar('DOUBLE'):
+            self.avancar()
+        else:
+            raise SyntaxError(f"Esperado tipo 'double', mas encontrado: {self.token_atual()}")
+
+    def vars(self):
+        self.consumir('ID')
+        self.mais_var()
+
+    def mais_var(self):
+        if self.verificar('VIRGULA'):
+            self.avancar()
+            self.vars()
