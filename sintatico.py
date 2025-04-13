@@ -50,7 +50,7 @@ class AnalisadorSintatico:
     def comandos(self):
         token = self.token_atual()
         if token is None or token[0] == 'FECHA_CHAVE':
-            return  # Vazio (lambda)
+            return  # Vazio 
 
         if token[0] == 'IF' or token[0] == 'WHILE':
             self.comando_condicional()
@@ -121,8 +121,8 @@ class AnalisadorSintatico:
 
     def resto_ident(self):
         token = self.token_atual()
-        if token[0] == 'IGUAL':
-            self.consumir('IGUAL')
+        if token[0] == 'ATRIB': 
+            self.consumir('ATRIB')
             self.exp_ident()
         elif token[0] == 'PARENTESE_ESQ':
             self.consumir('PARENTESE_ESQ')
