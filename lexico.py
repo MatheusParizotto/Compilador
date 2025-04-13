@@ -87,7 +87,7 @@ def tokenizer(codigo_fonte):
     return tokens
 
 # Testando o léxico com o mini java
-with open("mini-java-teste.java", "r", encoding="utf-8") as f:
+with open("mini-java.java", "r", encoding="utf-8") as f:
     # Remove espaços e quebras de linha extras
     codigo = f.read().strip()  
 
