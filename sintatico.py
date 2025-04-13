@@ -40,7 +40,23 @@ class AnalisadorSintatico:
         self.consumir('FECHA_CHAVE')
 
     def comandos(self):
-        pass
+        token = self.token_atual()
+        if token is None or token[0] == 'FECHA_CHAVE':
+            return  # Vazio
+
+        if token[0] == 'IF' or token[0] == 'WHILE':
+            self.comando_condicional()
+            self.comandos()
+        elif token[0] == 'SYSTEM' or token[0] == 'ID':
+            self.comando()
+            self.consumir('PONTO_VIRGULA')
+            self.comandos()
+        elif token[0] == 'DOUBLE':
+            self.declaracao_variaveis()
+            self.comandos()
+        else:
+            raise SyntaxError(f"Comando inválido iniciado por: {token}")
+
 
     def comando_condicional(self):
         if self.token_atual[0] == 'IF':
