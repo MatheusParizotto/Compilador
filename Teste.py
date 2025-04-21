@@ -1,5 +1,5 @@
 from lexico import tokenizer
-from sintatico import AnalisadorSintatico
+from sintatico_e_semantico import AnalisadorSintatico
 
 # Caminho do arquivo MiniJava
 caminho = "mini-java-teste.java"
