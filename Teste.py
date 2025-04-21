@@ -2,7 +2,7 @@ from lexico import tokenizer
 from sintatico import AnalisadorSintatico
 
 # Caminho do arquivo MiniJava
-caminho = "mini-java.java"
+caminho = "mini-java-teste.java"
 
 # Leitura do arquivo .java
 with open(caminho, "r", encoding="utf-8") as arquivo:
