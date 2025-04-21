@@ -2,6 +2,7 @@ class AnalisadorSintatico:
     def __init__(self, tokens):
         self.tokens = tokens
         self.posicao = 0
+        self.tabela_simbolos = {} 
 
     def token_atual(self):
         if self.posicao < len(self.tokens):
@@ -166,6 +167,9 @@ class AnalisadorSintatico:
 
     def fator(self):
         if self.verificar('ID'):
+            nome_var = self.token_atual()[1]
+            if nome_var not in self.tabela_simbolos:
+                raise Exception(f"Erro Semântico: Variável '{nome_var}' usada sem declaração.")
             self.avancar()
         elif self.verificar('NUMERO_REAL') or self.verificar('NUMERO_INTEIRO'):
             self.avancar()
@@ -201,13 +205,20 @@ class AnalisadorSintatico:
             raise SyntaxError(f"Esperado tipo 'double', mas encontrado: {self.token_atual()}")
 
     def vars(self):
-        self.consumir('ID')
-        self.mais_var()
+        if self.verificar('ID'):
+            nome_var = self.token_atual()[1]
+            if nome_var in self.tabela_simbolos:
+                raise Exception(f"Erro Semântico: Variável '{nome_var}' já declarada.")
+            self.tabela_simbolos[nome_var] = 'double'  
+            self.consumir('ID')
+            self.mais_var()
+        else:
+            raise SyntaxError(f"Esperado identificador após tipo, encontrado: {self.token_atual()}")
 
     def mais_var(self):
         if self.verificar('VIRGULA'):
-            self.avancar()
-            self.vars()
+            self.consumir('VIRGULA')
+            self.vars()  
 
     def mais_comandos(self):
         if self.verificar('PONTO_VIRGULA'):
