@@ -2,7 +2,10 @@ class AnalisadorSintatico:
     def __init__(self, tokens):
         self.tokens = tokens
         self.posicao = 0
-        self.tabela_simbolos = {} 
+        self.tabela_simbolos = {}        
+        self.endereco_memoria = 0        
+        self.codigo_objeto = []           
+        self.rotulo = 0                   
 
     def token_atual(self):
         if self.posicao < len(self.tokens):
