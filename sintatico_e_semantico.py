@@ -32,6 +32,8 @@ class AnalisadorSintatico:
         print("Análise sintática concluída com sucesso!")
 
     def programa(self):
+        self.codigo_objeto.append("INPP")  
+
         self.consumir('PUBLIC')
         self.consumir('CLASS')
         self.consumir('ID')
@@ -47,9 +49,19 @@ class AnalisadorSintatico:
         self.consumir('ID')
         self.consumir('PARENTESE_DIR')
         self.consumir('ABRE_CHAVE')
+
         self.comandos()
+
         self.consumir('FECHA_CHAVE')
         self.consumir('FECHA_CHAVE')
+
+        self.codigo_objeto.append("PARA") 
+
+        # Salva em arquivo
+        with open("codigo-objeto.txt", "w") as arquivo:
+            for instrucao in self.codigo_objeto:
+                arquivo.write(instrucao + "\n")
+        print("Código objeto gerado com sucesso em 'codigo-objeto.txt'")
 
     def comandos(self):
         token = self.token_atual()
@@ -214,9 +226,14 @@ class AnalisadorSintatico:
     def vars(self):
         if self.verificar('ID'):
             nome_var = self.token_atual()[1]
+            
             if nome_var in self.tabela_simbolos:
                 raise Exception(f"Erro Semântico: Variável '{nome_var}' já declarada.")
-            self.tabela_simbolos[nome_var] = 'double'  
+
+            self.tabela_simbolos[nome_var] = self.endereco_memoria
+            self.codigo_objeto.append("ALME 1")  
+            self.endereco_memoria += 1
+
             self.consumir('ID')
             self.mais_var()
         else:
