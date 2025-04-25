@@ -139,13 +139,19 @@ class AnalisadorSintatico:
 
     def resto_ident(self):
         token = self.token_atual()
+
         if token[0] == 'ATRIB':
             self.consumir('ATRIB')
-            # Verifica se a variável do lado esquerdo da atribuição foi declarada
-            var_nome = self.tokens[self.posicao - 2][1]  # Pega o nome da variável antes do '='
+            var_nome = self.tokens[self.posicao - 2][1]
+
             if var_nome not in self.tabela_simbolos:
                 raise Exception(f"Erro Semântico: Variável '{var_nome}' usada sem declaração.")
+
             self.exp_ident()
+
+            endereco = self.tabela_simbolos[var_nome]
+            self.codigo_objeto.append(f"ARMZ {endereco}")
+
         elif token[0] == 'PARENTESE_ESQ':
             self.consumir('PARENTESE_ESQ')
             self.lista_arg()
