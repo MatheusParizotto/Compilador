@@ -191,29 +191,47 @@ class AnalisadorSintatico:
         self.mais_fatores()
 
     def fator(self):
+        token = self.token_atual()
+        
         if self.verificar('ID'):
-            nome_var = self.token_atual()[1]
-            if nome_var not in self.tabela_simbolos:
-                raise Exception(f"Erro Semântico: Variável '{nome_var}' usada sem declaração.")
+            nome = token[1]
+            if nome not in self.tabela_simbolos:
+                raise Exception(f"Erro Semântico: Variável '{nome}' usada sem declaração.")
+            endereco = self.tabela_simbolos[nome]
             self.avancar()
-        elif self.verificar('NUMERO_REAL') or self.verificar('NUMERO_INTEIRO'):
+            self.codigo_objeto.append(f"CRVL {endereco}")
+
+        elif self.verificar('NUMERO_INTEIRO') or self.verificar('NUMERO_REAL'):
+            valor = token[1]
             self.avancar()
+            self.codigo_objeto.append(f"CRCT {valor}")
+
         elif self.verificar('PARENTESE_ESQ'):
             self.avancar()
             self.expressao()
             self.consumir('PARENTESE_DIR', "Esperado ')' ao final da expressão.")
         else:
-            raise SyntaxError(f"Esperado ID, número ou '(', mas encontrado: {self.token_atual()}")
+            raise SyntaxError(f"Esperado identificador, número ou '(', mas encontrado: {token}")
 
     def outros_termos(self):
         while self.verificar('SOMA') or self.verificar('SUB'):
+            operador = self.token_atual()[0]
             self.avancar()
             self.termo()
+            if operador == 'SOMA':
+                self.codigo_objeto.append("SOMA")
+            elif operador == 'SUB':
+                self.codigo_objeto.append("SUBT")
 
     def mais_fatores(self):
         while self.verificar('MULT') or self.verificar('DIV'):
+            operador = self.token_atual()[0]
             self.avancar()
             self.fator()
+            if operador == 'MULT':
+                self.codigo_objeto.append("MULT")
+            elif operador == 'DIV':
+                self.codigo_objeto.append("DIVI")
 
     def declaracao_variaveis(self):
         self.var()
