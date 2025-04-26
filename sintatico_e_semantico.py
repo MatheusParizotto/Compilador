@@ -83,22 +83,41 @@ class AnalisadorSintatico:
 
     def comando(self):
         token = self.token_atual()
-        # Verificação manual de System.out.println
-        if self.verificar('ID') and self.token_atual()[1] == 'System':
-            # Checar se vem . out . println 
-            self.consumir('ID')          
-            self.consumir('PONTO')       
-            self.consumir('ID')          
-            self.consumir('PONTO')       
-            self.consumir('ID')          
-            self.consumir('PARENTESE_ESQ')
-            self.expressao()
-            self.consumir('PARENTESE_DIR')
-        elif token[0] == 'ID':
+
+        if token[0] == 'ID':
+            nome_var = token[1]
+            if nome_var not in self.tabela_simbolos:
+                raise Exception(f"Erro Semântico: Variável '{nome_var}' usada sem declaração.")
+
             self.consumir('ID')
             self.resto_ident()
+
+        elif token[0] == 'SYSTEM':
+            self.consumir('SYSTEM')
+            self.consumir('PONTO')
+            self.consumir('OUT')
+            self.consumir('PONTO')
+            self.consumir('PRINTLN')
+            self.consumir('PARENTESE_ESQ')
+
+            var_token = self.token_atual()
+            if var_token[0] == 'ID':
+                var_nome = var_token[1]
+                if var_nome not in self.tabela_simbolos:
+                    raise Exception(f"Erro Semântico: Variável '{var_nome}' usada sem declaração.")
+
+                endereco = self.tabela_simbolos[var_nome]
+                self.consumir('ID')
+                self.codigo_objeto.append(f"CRVL {endereco}")
+                self.codigo_objeto.append("IMPR")
+
+            else:
+                raise SyntaxError(f"Esperado uma variável para impressão, encontrado: {var_token}")
+
+            self.consumir('PARENTESE_DIR')
+
         else:
-            raise SyntaxError(f"Comando inesperado: {token}")
+            raise SyntaxError(f"Comando inválido iniciado por: {token}")
 
     def comando_condicional(self):
         if self.verificar('IF'):
