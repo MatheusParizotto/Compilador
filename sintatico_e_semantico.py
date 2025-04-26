@@ -149,12 +149,28 @@ class AnalisadorSintatico:
 
     def condicao(self):
         self.expressao()
-        if self.verificar('IGUAL') or self.verificar('DIFERENTE') or self.verificar('MAIOR_IGUAL') or \
-           self.verificar('MENOR_IGUAL') or self.verificar('MAIOR') or self.verificar('MENOR'):
+
+        operador = self.token_atual()
+        if operador[0] in ['IGUAL', 'DIFERENTE', 'MAIOR', 'MENOR', 'MAIOR_IGUAL', 'MENOR_IGUAL']:
             self.avancar()
         else:
-            raise SyntaxError(f"Esperado operador relacional, encontrado: {self.token_atual()}")
+            raise SyntaxError(f"Operador relacional esperado, mas encontrado: {operador}")
+
         self.expressao()
+
+        # Gera a instrução de comparação
+        if operador[0] == 'MAIOR':
+            self.codigo_objeto.append("CPMA")
+        elif operador[0] == 'MENOR':
+            self.codigo_objeto.append("CPME")
+        elif operador[0] == 'IGUAL':
+            self.codigo_objeto.append("CPIG")
+        elif operador[0] == 'DIFERENTE':
+            self.codigo_objeto.append("CDES")
+        elif operador[0] == 'MAIOR_IGUAL':
+            self.codigo_objeto.append("CPME")
+        elif operador[0] == 'MENOR_IGUAL':
+            self.codigo_objeto.append("CPMA")
 
     def resto_ident(self):
         token = self.token_atual()
