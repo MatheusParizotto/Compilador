@@ -201,9 +201,11 @@ class AnalisadorSintatico:
         elif operador[0] == 'DIFERENTE':
             self.codigo_objeto.append("CDES")
         elif operador[0] == 'MAIOR_IGUAL':
-            self.codigo_objeto.append("CPME")
+            self.codigo_objeto.append("CPME")  
+            self.codigo_objeto.append("DSVF ??")  
         elif operador[0] == 'MENOR_IGUAL':
-            self.codigo_objeto.append("CPMA")
+            self.codigo_objeto.append("CPMA")  
+            self.codigo_objeto.append("DSVF ??")  
 
     def resto_ident(self):
         token = self.token_atual()
