@@ -121,24 +121,57 @@ class AnalisadorSintatico:
 
     def comando_condicional(self):
         if self.verificar('IF'):
-            self.consumir('IF')
+            self.avancar()
             self.consumir('PARENTESE_ESQ')
+            
             self.condicao()
+
             self.consumir('PARENTESE_DIR')
             self.consumir('ABRE_CHAVE')
+
+            
+            endereco_dsvf = len(self.codigo_objeto)
+            self.codigo_objeto.append('DSVF ??')  
+
             self.comandos()
             self.consumir('FECHA_CHAVE')
-            self.parte_falsa()
+
+            if self.verificar('ELSE'):
+                endereco_dsvf_final = len(self.codigo_objeto)
+                self.codigo_objeto.append('DSVI ??')  
+
+                self.codigo_objeto[endereco_dsvf] = f'DSVF {len(self.codigo_objeto)}'
+
+                self.avancar()
+                self.consumir('ABRE_CHAVE')
+                self.comandos()
+                self.consumir('FECHA_CHAVE')
+
+                self.codigo_objeto[endereco_dsvf_final] = f'DSVI {len(self.codigo_objeto)}'
+
+            else:
+                self.codigo_objeto[endereco_dsvf] = f'DSVF {len(self.codigo_objeto)}'
+
         elif self.verificar('WHILE'):
-            self.consumir('WHILE')
+            self.avancar()
             self.consumir('PARENTESE_ESQ')
+
+            inicio_while = len(self.codigo_objeto)
+
             self.condicao()
+
             self.consumir('PARENTESE_DIR')
             self.consumir('ABRE_CHAVE')
+
+            endereco_dsvf = len(self.codigo_objeto)
+            self.codigo_objeto.append('DSVF ??')
+
             self.comandos()
+
             self.consumir('FECHA_CHAVE')
-        else:
-            raise SyntaxError(f"Esperado 'if' ou 'while', mas encontrado: {self.token_atual()}")
+
+            self.codigo_objeto.append(f'DSVI {inicio_while}')
+            self.codigo_objeto[endereco_dsvf] = f'DSVF {len(self.codigo_objeto)}'
 
     def parte_falsa(self):
         if self.verificar('ELSE'):
