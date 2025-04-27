@@ -1,7 +1,7 @@
 from lexico import tokenizer
 from sintatico_e_semantico import AnalisadorSintatico
 
-caminho = "mini-java-teste.java"
+caminho = "mini-java-teste2.java"
 
 with open(caminho, "r", encoding="utf-8") as arquivo:
     codigo_fonte = arquivo.read()

@@ -84,25 +84,17 @@ class AnalisadorSintatico:
     def comando(self):
         token = self.token_atual()
 
-        if token[0] == 'ID':
-            nome_var = token[1]
-
-            # 👇 Correção rápida
-            if nome_var == 'System':
-                pass  # Não verifica System como variável
-            else:
-                if nome_var not in self.tabela_simbolos:
-                    raise Exception(f"Erro Semântico: Variável '{nome_var}' usada sem declaração.")
-
-            self.consumir('ID')
-            self.resto_ident()
-
-        elif token[0] == 'SYSTEM':
-            self.consumir('SYSTEM')
+        # Se for início de impressão: System.out.println(c)
+        if token[0] == 'ID' and token[1] == 'System':
+            self.consumir('ID')  
             self.consumir('PONTO')
-            self.consumir('OUT')
+            if self.token_atual()[0] != 'ID' or self.token_atual()[1] != 'out':
+                raise SyntaxError(f"Esperado 'out' após 'System.', encontrado: {self.token_atual()}")
+            self.consumir('ID')  
             self.consumir('PONTO')
-            self.consumir('PRINTLN')
+            if self.token_atual()[0] != 'ID' or self.token_atual()[1] != 'println':
+                raise SyntaxError(f"Esperado 'println' após 'System.out.', encontrado: {self.token_atual()}")
+            self.consumir('ID')  
             self.consumir('PARENTESE_ESQ')
 
             var_token = self.token_atual()
@@ -117,9 +109,17 @@ class AnalisadorSintatico:
                 self.codigo_objeto.append("IMPR")
 
             else:
-                raise SyntaxError(f"Esperado uma variável para impressão, encontrado: {var_token}")
+                raise SyntaxError(f"Esperado uma variável para imprimir, encontrado: {var_token}")
 
             self.consumir('PARENTESE_DIR')
+
+        # Se for uma variável comum
+        elif token[0] == 'ID':
+            nome_var = token[1]
+            if nome_var not in self.tabela_simbolos:
+                raise Exception(f"Erro Semântico: Variável '{nome_var}' usada sem declaração.")
+            self.consumir('ID')
+            self.resto_ident()
 
         else:
             raise SyntaxError(f"Comando inválido iniciado por: {token}")
