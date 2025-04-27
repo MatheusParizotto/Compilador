@@ -1,4 +1,4 @@
-caminho_arquivo = "codigo-objeto-exemplo.txt"
+caminho_arquivo = "codigo-objeto.txt"
 
 D = []  # Pilha de dados
 s = -1  # Topo da pilha
