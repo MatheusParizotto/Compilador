@@ -1,10 +1,8 @@
 from lexico import tokenizer
 from sintatico_e_semantico import AnalisadorSintatico
 
-# Caminho do arquivo MiniJava
 caminho = "mini-java-teste.java"
 
-# Leitura do arquivo .java
 with open(caminho, "r", encoding="utf-8") as arquivo:
     codigo_fonte = arquivo.read()
 
@@ -15,7 +13,7 @@ try:
     for token in tokens:
         print(token)
 
-    # Análise sintática
+    # Análise sintática e semantica
     analisador = AnalisadorSintatico(tokens)
     analisador.analisar()
 
