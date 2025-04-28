@@ -40,8 +40,39 @@ def executar_comando(comando):
         D[s-1] = D[s-1] - D[s]
         D.pop()
         s -= 1
+    elif instrucao == "MULT":
+        D[s-1] = D[s-1] * D[s]
+        D.pop()
+        s -= 1
+    elif instrucao == "DIVI":
+        if D[s] == 0:
+            print("Erro: Divisão por zero!")
+            exit()
+        D[s-1] = D[s-1] / D[s]
+        D.pop()
+        s -= 1
+    elif instrucao == "CPME":
+        D[s-1] = 1 if D[s-1] < D[s] else 0
+        D.pop()
+        s -= 1
     elif instrucao == "CPMA":
         D[s-1] = 1 if D[s-1] > D[s] else 0
+        D.pop()
+        s -= 1
+    elif instrucao == "CPIG":
+        D[s-1] = 1 if D[s-1] == D[s] else 0
+        D.pop()
+        s -= 1
+    elif instrucao == "CDES":
+        D[s-1] = 1 if D[s-1] != D[s] else 0
+        D.pop()
+        s -= 1
+    elif instrucao == "CMEG":
+        D[s-1] = 1 if D[s-1] >= D[s] else 0
+        D.pop()
+        s -= 1
+    elif instrucao == "CMEI":
+        D[s-1] = 1 if D[s-1] <= D[s] else 0
         D.pop()
         s -= 1
     elif instrucao == "DSVF":
@@ -53,7 +84,7 @@ def executar_comando(comando):
     elif instrucao == "DSVI":
         i = int(partes[1]) - 1
     elif instrucao == "LEIT":
-        valor = int(input())
+        valor = int(input("Digite um valor: "))
         s += 1
         D.append(valor)
     elif instrucao == "IMPR":
@@ -61,6 +92,10 @@ def executar_comando(comando):
         D.pop()
         s -= 1
     elif instrucao == "PARA":
+        print("Programa finalizado.")
+        exit()
+    else:
+        print(f"Erro: Instrução desconhecida -> {instrucao}")
         exit()
 
 # Lendo o arquivo de comandos
