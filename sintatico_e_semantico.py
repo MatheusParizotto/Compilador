@@ -2,17 +2,18 @@ class AnalisadorSintatico:
     def __init__(self, tokens):
         self.tokens = tokens
         self.posicao = 0
-        self.tabela_simbolos = {}        
-        self.endereco_memoria = 0        
-        self.codigo_objeto = []           
-        self.rotulo = 0                   
+        self.tabela_simbolos = {}        # Guarda variáveis declaradas
+        self.endereco_memoria = 0         # Endereço atual para armazenar variáveis
+        self.codigo_objeto = []           # Lista de instruções geradas
 
     def token_atual(self):
+        # Retorna o token atual
         if self.posicao < len(self.tokens):
             return self.tokens[self.posicao]
         return None
 
     def consumir(self, tipo_esperado, mensagem=None):
+        # Consome o token se for do tipo esperado
         token = self.token_atual()
         if token and token[0] == tipo_esperado:
             self.posicao += 1
@@ -21,18 +22,22 @@ class AnalisadorSintatico:
             raise SyntaxError(erro)
 
     def verificar(self, tipo):
+        # Verifica se o token atual é do tipo indicado
         token = self.token_atual()
         return token and token[0] == tipo
 
     def avancar(self):
+        # Avança um token
         self.posicao += 1
 
     def analisar(self):
+        # Inicia a análise sintática
         self.programa()
         print("Análise sintática concluída com sucesso!")
 
     def programa(self):
-        self.codigo_objeto.append("INPP")  
+        # Reconhece a estrutura principal do programa
+        self.codigo_objeto.append("INPP")  # Início do programa
 
         self.consumir('PUBLIC')
         self.consumir('CLASS')
@@ -55,18 +60,19 @@ class AnalisadorSintatico:
         self.consumir('FECHA_CHAVE')
         self.consumir('FECHA_CHAVE')
 
-        self.codigo_objeto.append("PARA") 
+        self.codigo_objeto.append("PARA")  # Fim do programa
 
-        # Salva em arquivo
+        # Salva o código objeto
         with open("codigo-objeto.txt", "w") as arquivo:
             for instrucao in self.codigo_objeto:
                 arquivo.write(instrucao + "\n")
         print("Código objeto gerado com sucesso em 'codigo-objeto.txt'")
 
     def comandos(self):
+        # Analisa vários comandos
         token = self.token_atual()
         if token is None or token[0] == 'FECHA_CHAVE':
-            return  # Vazio 
+            return  # Não há mais comandos
 
         if token[0] == 'IF' or token[0] == 'WHILE':
             self.comando_condicional()
@@ -82,17 +88,18 @@ class AnalisadorSintatico:
             raise SyntaxError(f"Comando inválido iniciado por: {token}")
 
     def comando(self):
+        # Trata comando de atribuição ou impressão
         token = self.token_atual()
 
-        # Se for início de impressão: System.out.println(c)
         if token[0] == 'ID' and token[1] == 'System':
+            # Trata impressão System.out.println()
             self.consumir('ID')  
             self.consumir('PONTO')
-            if self.token_atual()[0] != 'ID' or self.token_atual()[1] != 'out':
+            if self.token_atual()[1] != 'out':
                 raise SyntaxError(f"Esperado 'out' após 'System.', encontrado: {self.token_atual()}")
             self.consumir('ID')  
             self.consumir('PONTO')
-            if self.token_atual()[0] != 'ID' or self.token_atual()[1] != 'println':
+            if self.token_atual()[1] != 'println':
                 raise SyntaxError(f"Esperado 'println' após 'System.out.', encontrado: {self.token_atual()}")
             self.consumir('ID')  
             self.consumir('PARENTESE_ESQ')
@@ -102,19 +109,17 @@ class AnalisadorSintatico:
                 var_nome = var_token[1]
                 if var_nome not in self.tabela_simbolos:
                     raise Exception(f"Erro Semântico: Variável '{var_nome}' usada sem declaração.")
-
                 endereco = self.tabela_simbolos[var_nome]
                 self.consumir('ID')
                 self.codigo_objeto.append(f"CRVL {endereco}")
                 self.codigo_objeto.append("IMPR")
-
             else:
                 raise SyntaxError(f"Esperado uma variável para imprimir, encontrado: {var_token}")
 
             self.consumir('PARENTESE_DIR')
 
-        # Se for uma variável comum
         elif token[0] == 'ID':
+            # Trata atribuição
             nome_var = token[1]
             if nome_var not in self.tabela_simbolos:
                 raise Exception(f"Erro Semântico: Variável '{nome_var}' usada sem declaração.")
@@ -125,25 +130,23 @@ class AnalisadorSintatico:
             raise SyntaxError(f"Comando inválido iniciado por: {token}")
 
     def comando_condicional(self):
+        # Trata IF e WHILE
         if self.verificar('IF'):
             self.avancar()
             self.consumir('PARENTESE_ESQ')
-            
             self.condicao()
-
             self.consumir('PARENTESE_DIR')
             self.consumir('ABRE_CHAVE')
 
-            
             endereco_dsvf = len(self.codigo_objeto)
-            self.codigo_objeto.append('DSVF ??')  
+            self.codigo_objeto.append('DSVF ??')  # Reserva espaço para salto
 
             self.comandos()
             self.consumir('FECHA_CHAVE')
 
             if self.verificar('ELSE'):
                 endereco_dsvf_final = len(self.codigo_objeto)
-                self.codigo_objeto.append('DSVI ??')  
+                self.codigo_objeto.append('DSVI ??')  # Salta após o ELSE
 
                 self.codigo_objeto[endereco_dsvf] = f'DSVF {len(self.codigo_objeto)}'
 
@@ -153,7 +156,6 @@ class AnalisadorSintatico:
                 self.consumir('FECHA_CHAVE')
 
                 self.codigo_objeto[endereco_dsvf_final] = f'DSVI {len(self.codigo_objeto)}'
-
             else:
                 self.codigo_objeto[endereco_dsvf] = f'DSVF {len(self.codigo_objeto)}'
 
@@ -178,14 +180,8 @@ class AnalisadorSintatico:
             self.codigo_objeto.append(f'DSVI {inicio_while}')
             self.codigo_objeto[endereco_dsvf] = f'DSVF {len(self.codigo_objeto)}'
 
-    def parte_falsa(self):
-        if self.verificar('ELSE'):
-            self.consumir('ELSE')
-            self.consumir('ABRE_CHAVE')
-            self.comandos()
-            self.consumir('FECHA_CHAVE')
-
     def condicao(self):
+        # Trata uma condição relacional
         self.expressao()
 
         operador = self.token_atual()
@@ -196,7 +192,6 @@ class AnalisadorSintatico:
 
         self.expressao()
 
-        # Gera a instrução de comparação
         if operador[0] == 'MAIOR':
             self.codigo_objeto.append("CPMA")
         elif operador[0] == 'MENOR':
@@ -206,37 +201,20 @@ class AnalisadorSintatico:
         elif operador[0] == 'DIFERENTE':
             self.codigo_objeto.append("CDES")
         elif operador[0] == 'MAIOR_IGUAL':
-            self.codigo_objeto.append("CPME")  
-            self.codigo_objeto.append("DSVF ??")  
+            self.codigo_objeto.append("CMEI")  
         elif operador[0] == 'MENOR_IGUAL':
-            self.codigo_objeto.append("CPMA")  
-            self.codigo_objeto.append("DSVF ??")  
-
-    def chamada_print(self):
-        self.consumir('ID')    
-        self.consumir('PONTO')
-        self.consumir('ID')     
-        self.consumir('PONTO')
-        self.consumir('ID')     
-        self.consumir('PARENTESE_ESQ')
-        self.expressao()
-        self.consumir('PARENTESE_DIR')
-
-        # Código objeto para imprimir
-        self.codigo_objeto.append("IMPR")
+            self.codigo_objeto.append("CMEG")  
 
     def resto_ident(self):
+        # Continua analisando após um identificador
         token = self.token_atual()
 
         if token[0] == 'ATRIB':
             self.consumir('ATRIB')
             var_nome = self.tokens[self.posicao - 2][1]
-
             if var_nome not in self.tabela_simbolos:
                 raise Exception(f"Erro Semântico: Variável '{var_nome}' usada sem declaração.")
-
             self.exp_ident()
-
             endereco = self.tabela_simbolos[var_nome]
             self.codigo_objeto.append(f"ARMZ {endereco}")
 
@@ -248,12 +226,13 @@ class AnalisadorSintatico:
             raise SyntaxError(f"Esperado '=' ou '(', encontrado: {token}")
 
     def exp_ident(self):
+        # Expressão de atribuição
         token = self.token_atual()
         if token[0] == 'LERDOUBLE':
             self.consumir('LERDOUBLE')
             self.consumir('PARENTESE_ESQ')
             self.consumir('PARENTESE_DIR')
-            self.codigo_objeto.append("LEIT")  
+            self.codigo_objeto.append("LEIT")
         else:
             self.expressao()
 
@@ -282,7 +261,7 @@ class AnalisadorSintatico:
 
     def fator(self):
         token = self.token_atual()
-        
+
         if self.verificar('ID'):
             nome = token[1]
             if nome not in self.tabela_simbolos:
@@ -299,7 +278,8 @@ class AnalisadorSintatico:
         elif self.verificar('PARENTESE_ESQ'):
             self.avancar()
             self.expressao()
-            self.consumir('PARENTESE_DIR', "Esperado ')' ao final da expressão.")
+            self.consumir('PARENTESE_DIR')
+
         else:
             raise SyntaxError(f"Esperado identificador, número ou '(', mas encontrado: {token}")
 
@@ -340,7 +320,6 @@ class AnalisadorSintatico:
     def vars(self):
         if self.verificar('ID'):
             nome_var = self.token_atual()[1]
-            
             if nome_var in self.tabela_simbolos:
                 raise Exception(f"Erro Semântico: Variável '{nome_var}' já declarada.")
 
@@ -356,7 +335,7 @@ class AnalisadorSintatico:
     def mais_var(self):
         if self.verificar('VIRGULA'):
             self.consumir('VIRGULA')
-            self.vars()  
+            self.vars()
 
     def mais_comandos(self):
         if self.verificar('PONTO_VIRGULA'):
