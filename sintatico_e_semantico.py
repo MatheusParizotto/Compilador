@@ -248,10 +248,12 @@ class AnalisadorSintatico:
             raise SyntaxError(f"Esperado '=' ou '(', encontrado: {token}")
 
     def exp_ident(self):
-        if self.verificar('LERDOUBLE'):
+        token = self.token_atual()
+        if token[0] == 'LERDOUBLE':
             self.consumir('LERDOUBLE')
             self.consumir('PARENTESE_ESQ')
             self.consumir('PARENTESE_DIR')
+            self.codigo_objeto.append("LEIT")  
         else:
             self.expressao()
 
