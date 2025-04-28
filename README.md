@@ -3,7 +3,7 @@
 Esse é um projeto de compilador feito em Python desenvolvido para concluir a matéria Compiladores II
 
 ## Como preparar o ambiente:
-- Tenho o python instalado na máquina (Versão 3.10);
+- Tenha o python instalado na máquina (Versão 3.8 ou superior);
 - Clone o repositório para algum diretório de sua preferência;
 - Abra o repositório utilizando algum editor de código (De sua escolha também).
 
